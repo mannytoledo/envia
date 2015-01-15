@@ -1,3 +1,4 @@
+require_relative 'warnings'
 require 'thor'
 require 'aws-sdk-core'
 # require 'pry'
@@ -9,10 +10,12 @@ module Envia
     desc "share KEY", "Generate a url given an S3 object key."
     option :expiry, :default => 3600
     def share( prefix )
-      source = ConfigReader::Config.new
-      signer = Aws::S3::Presigner.new(client: source.client)
-      url = signer.presigned_url(:get_object, bucket: source.config['bucket'], key: prefix, expires_in: options['expiry'].to_i)
-      puts url
+      silence_warnings do
+        source = ConfigReader::Config.new
+        signer = Aws::S3::Presigner.new(client: source.client)
+        url = signer.presigned_url(:get_object, bucket: source.config['bucket'], key: prefix, expires_in: options['expiry'].to_i)
+        puts url
+      end
     end
 
     desc "upload path/to/file", "Upload file from your machine to the defined bucket."

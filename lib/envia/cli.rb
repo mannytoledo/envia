@@ -20,12 +20,15 @@ module Envia
 
     desc "upload path/to/file", "Upload file from your machine to the defined bucket."
     def upload( filename )
+      silence_warnings do
       source = ConfigReader::Config.new
       source.client.put_object(
         body: File.open( filename ),
         bucket: source.config['bucket'],
         key: File.basename(filename)
       )
+      end
+      puts 'SUCCESS!'
     end
   end
 end
